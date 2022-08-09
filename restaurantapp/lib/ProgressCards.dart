@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class ProgressCard extends StatelessWidget {
-  final double goal;
-  final double progress;
   final String indicator;
-  const ProgressCard(
-      {required this.goal,
-      required this.progress,
-      required this.indicator,
-      key})
-      : super(key: key);
+  const ProgressCard({required this.indicator, key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final db = FirebaseFirestore.instance;
+    final docRef = db.collection("store1").doc("CI4bM8dwoLr3PUVZLnUn");
+    docRef.get().then(
+      (DocumentSnapshot doc) {
+        final data = doc.data() as Map<String, dynamic>;
+      },
+      onError: (e) => print("Error getting document: $e"),
+    );
     return Container(
       width: MediaQuery.of(context).size.width / 1.3,
       height: 350,
@@ -58,7 +61,7 @@ class ProgressCard extends StatelessWidget {
                     lineWidth: 15.0,
                     backgroundColor: Colors.grey,
                     progressColor: Colors.amber,
-                    percent: progress / goal,
+                    percent: 0.0,
                     animation: true,
                     center: Text(
                       indicator,

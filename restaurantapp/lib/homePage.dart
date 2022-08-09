@@ -3,8 +3,14 @@ import 'package:restaurantapp/ProgressCards.dart';
 import 'package:restaurantapp/BottomNavBar.dart';
 import 'package:restaurantapp/RecentEntry.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,23 +48,15 @@ class HomePage extends StatelessWidget {
                         scrollDirection: Axis.horizontal,
                         children: const [
                           ProgressCard(
-                            goal: 100000,
-                            progress: 30000,
                             indicator: "REVENUE",
                           ),
                           ProgressCard(
-                            goal: 20000,
-                            progress: 10000,
                             indicator: "SALES",
                           ),
                           ProgressCard(
-                            goal: 100,
-                            progress: 30,
                             indicator: "RETENTION",
                           ),
                           ProgressCard(
-                            goal: 100,
-                            progress: 20,
                             indicator: "QUALITY",
                           ),
                         ],

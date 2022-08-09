@@ -3,37 +3,51 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_login/flutter_login.dart';
+import 'package:restaurantapp/homePage.dart';
 
 class Authentication extends StatelessWidget {
-  final controller = TextEditingController();
-
-  Authentication({Key? key}) : super(key: key);
+  const Authentication({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    void dispose() {
-      controller.dispose();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+    bool success;
+    String userEmail;
+    String userPassword;
+
+    Future<void> authenticate() async {
+      userEmail = emailController.text;
+      userPassword = passwordController.text;
+
+      try {
+        final credential =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: userEmail,
+          password: userPassword,
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return HomePage();
+            },
+          ),
+        );
+      } on FirebaseAuthException catch (error) {
+        if (error.code == "user-not-found") {
+          print('No User found with that email.');
+        } else if (error.code == "wrong-password") {
+          print('Wrong password prvided for that user');
+        }
+      }
     }
 
-    //void authenticate(String emailAddress, String password) {
-    //try {
-    //final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-    //email: emailAddress,
-    //password: password,
-    //);
-//} on FirebaseAuthException catch (e) {
-//  if (e.code == 'weak-password') {
-//    print('The password provided is too weak.');
-//  } else if (e.code == 'email-already-in-use') {
-//    print('The account already exists for that email.');
-//  }
-//} catch (e) {
-//  print(e);
-//}
-//    }
-
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text("Sign In"),
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -72,8 +86,8 @@ class Authentication extends StatelessWidget {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width - 30,
                   height: 50,
-                  child: TextField(
-                    controller: controller,
+                  child: TextFormField(
+                    controller: emailController,
                     obscureText: false,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
@@ -92,8 +106,8 @@ class Authentication extends StatelessWidget {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width - 30,
                   height: 50,
-                  child: TextField(
-                    controller: controller,
+                  child: TextFormField(
+                    controller: passwordController,
                     obscureText: true,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
@@ -114,7 +128,9 @@ class Authentication extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(primary: Colors.blue),
-                    onPressed: (() {}),
+                    onPressed: (() {
+                      authenticate();
+                    }),
                     child: const Text(
                       "Sign up",
                       style: TextStyle(color: Colors.white),
