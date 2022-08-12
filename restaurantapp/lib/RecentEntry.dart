@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 
 class RecentEntry extends StatelessWidget {
-  final String type;
-  final double goal;
   final String name;
   final String date;
-  final String amount;
+  final String revenue;
+  final String sales;
   const RecentEntry(
-      {required this.type,
-      required this.goal,
-      required this.name,
+      {required this.name,
       required this.date,
-      required this.amount,
+      required this.revenue,
+      required this.sales,
       Key? key})
       : super(key: key);
 
@@ -42,7 +40,7 @@ class RecentEntry extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(5.0),
                 child: Text(
-                  name,
+                  date,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 25,
@@ -58,7 +56,7 @@ class RecentEntry extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(5.0),
                 child: Text(
-                  date,
+                  name,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 15,
@@ -74,7 +72,7 @@ class RecentEntry extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(5.0),
                 child: Text(
-                  "Actual: $amount",
+                  "Sales: $sales",
                   textAlign: TextAlign.right,
                   style: const TextStyle(
                     color: Colors.black,
@@ -87,7 +85,7 @@ class RecentEntry extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    "Goal: $goal",
+                    "Revenue: $revenue",
                     textAlign: TextAlign.right,
                     style: const TextStyle(
                       color: Colors.black,
@@ -96,23 +94,9 @@ class RecentEntry extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
+              )
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                "Entry Type: $type",
-                textAlign: TextAlign.right,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-            ],
-          )
         ],
       ),
     );

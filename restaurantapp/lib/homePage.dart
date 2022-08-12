@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:restaurantapp/AppBar.dart';
 import 'package:restaurantapp/ProgressCards.dart';
 import 'package:restaurantapp/BottomNavBar.dart';
 import 'package:restaurantapp/RecentEntry.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -13,20 +16,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    final db = FirebaseFirestore.instance.collection('store1');
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(35.0),
-        child: AppBar(
-          backgroundColor: Colors.amber,
-          title: const Text(
-            "Business Manager",
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.black,
-            ),
-          ),
-        ),
-      ),
+      appBar: const PreferredSize(
+          preferredSize: Size.fromHeight(35.0), child: appBar()),
       bottomNavigationBar: const BottomNavBar(),
       body: SafeArea(
         child: SizedBox(
@@ -46,24 +39,66 @@ class _HomePageState extends State<HomePage> {
                       height: 350,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
-                        children: const [
-                          ProgressCard(
-                            indicator: "REVENUE",
+                        children: [
+                          StreamBuilder(
+                            stream: db.doc("CI4bM8dwoLr3PUVZLnUn").snapshots(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return CircularPercentIndicator(radius: 12);
+                              } else {
+                                var document =
+                                    snapshot.data as DocumentSnapshot;
+                                int revenue = document["revenue"];
+                                int revGoal = document["rev_goal"];
+                                return ProgressCard(
+                                  progress: revenue,
+                                  goal: revGoal,
+                                  indicator: "REVENUE",
+                                );
+                              }
+                            },
                           ),
-                          ProgressCard(
-                            indicator: "SALES",
+                          StreamBuilder(
+                            stream: db.doc("CI4bM8dwoLr3PUVZLnUn").snapshots(),
+                            builder: ((context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return CircularPercentIndicator(radius: 12);
+                              } else {
+                                var document =
+                                    snapshot.data as DocumentSnapshot;
+                                int sales = document["sales"];
+                                int salesGoal = document["sales_goal"];
+                                return ProgressCard(
+                                  progress: sales,
+                                  goal: salesGoal,
+                                  indicator: "SALES",
+                                );
+                              }
+                            }),
                           ),
-                          ProgressCard(
-                            indicator: "RETENTION",
-                          ),
-                          ProgressCard(
-                            indicator: "QUALITY",
+                          StreamBuilder(
+                            stream: db.doc("CI4bM8dwoLr3PUVZLnUn").snapshots(),
+                            builder: ((context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return CircularPercentIndicator(radius: 12);
+                              } else {
+                                var document =
+                                    snapshot.data as DocumentSnapshot;
+                                int satisfaction = document["satisfaction"];
+                                int satisGoal = document["satis_goal"];
+                                return ProgressCard(
+                                  progress: satisfaction,
+                                  goal: satisGoal,
+                                  indicator: "SATISFY",
+                                );
+                              }
+                            }),
                           ),
                         ],
                       ),
                     ),
                     const Text(
-                      "Recent Entries",
+                      "Most Recent Entry",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w300,
@@ -72,43 +107,27 @@ class _HomePageState extends State<HomePage> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        RecentEntry(
-                            type: "Sales",
-                            goal: 3333.33,
-                            name: "John Stennett",
-                            date: "01/23/2022",
-                            amount: "2500"),
-                        RecentEntry(
-                            type: "Sales",
-                            goal: 3333.33,
-                            name: "John Stennett",
-                            date: "01/24/2022",
-                            amount: "\$3000"),
-                        RecentEntry(
-                            type: "Sales",
-                            goal: 3333.33,
-                            name: "John Stennett",
-                            date: "01/24/2022",
-                            amount: "\$3000"),
-                        RecentEntry(
-                            type: "Sales",
-                            goal: 3333.33,
-                            name: "John Stennett",
-                            date: "01/25/2022",
-                            amount: "\$3000"),
-                        RecentEntry(
-                            type: "Quality",
-                            goal: 75.5,
-                            name: "John Stennett",
-                            date: "01/26/2022",
-                            amount: "%68.6"),
-                        RecentEntry(
-                            type: "Sales",
-                            goal: 3333.33,
-                            name: "John Stennett",
-                            date: "01/27/2022",
-                            amount: "\$3000"),
+                      children: [
+                        StreamBuilder(
+                          stream: db.doc("entry_dates").snapshots(),
+                          builder: ((context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return const Text("No data Available");
+                            } else {
+                              var document = snapshot.data as DocumentSnapshot;
+                              int sales = document["sales"];
+                              String date = document["date"];
+                              String name = document["name"];
+                              int revenue = document["revenue"];
+                              return RecentEntry(
+                                date: date,
+                                name: name,
+                                sales: sales.toString(),
+                                revenue: revenue.toString(),
+                              );
+                            }
+                          }),
+                        ),
                       ],
                     ),
                   ],
